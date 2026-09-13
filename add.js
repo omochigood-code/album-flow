@@ -166,6 +166,11 @@ function startAddPage() {
     selectPreview.style.display = 'block';
     selectPreview.style.left = '0%';
     selectPreview.style.width = '0%';
+    // Dismiss the on-screen keyboard (mobile) so it doesn't swallow this tap
+    // and so it isn't left covering the screen while dragging.
+    if (document.activeElement && segForm.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
   }
 
   function handleDragMove(clientX) {
@@ -255,15 +260,19 @@ function startAddPage() {
       setLabelCategory(label, segCategoryInput.value.trim());
     }
     currentSong.segments.push({ id: uid(), label, start, end });
-    hideSegmentForm();
-    selectHint.style.display = 'flex';
+    // Keep the form open on the same time range so another label can be
+    // added to it right away (the same range can hold multiple items).
+    segLabelInput.value = '';
+    segCategoryInput.value = '';
+    segLabelInput.focus();
     renderSegmentList();
     renderLabelColors();
   });
 
   btnCancelSegment.addEventListener('click', () => {
-    hideSegmentForm();
-    selectHint.style.display = 'flex';
+    // Just clear the label/category fields — no need to collapse the form.
+    segLabelInput.value = '';
+    segCategoryInput.value = '';
   });
 
   // --- Song lifecycle ---
