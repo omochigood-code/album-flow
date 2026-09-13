@@ -93,12 +93,6 @@ header.topnav a:hover { background: #f0f1f4; }
   color: #d64545 !important;
 }
 
-.auth-checking-text {
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted) !important;
-}
-
 main {
   max-width: 960px;
   margin: 0 auto;
