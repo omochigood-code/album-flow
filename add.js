@@ -29,6 +29,21 @@ function startAddPage() {
   const songListEl = document.getElementById('song-list');
   const labelColorPanel = document.getElementById('label-color-panel');
 
+  // Upserts currentSong into the songs list and saves immediately, so
+  // in-progress edits aren't lost if the tab closes before "保存" is clicked
+  // (data is already scoped to this signed-in user in Firestore, so there's
+  // no reason to hold changes back behind an explicit save step).
+  function persistCurrentSong() {
+    if (!currentSong) return;
+    const existingIndex = songs.findIndex((s) => s.id === currentSong.id);
+    if (existingIndex >= 0) {
+      songs[existingIndex] = currentSong;
+    } else {
+      songs.push(currentSong);
+    }
+    saveSongs(songs);
+  }
+
   function renderLabelColors() {
     const extra = currentSong ? currentSong.segments : null;
     const labels = collectLabels(songs, extra);
@@ -94,6 +109,7 @@ function startAddPage() {
         del.textContent = '削除';
         del.addEventListener('click', () => {
           currentSong.segments = currentSong.segments.filter((s) => s.id !== seg.id);
+          persistCurrentSong();
           renderSegmentList();
           renderLabelColors();
         });
@@ -271,6 +287,7 @@ function startAddPage() {
       setLabelCategory(label, segCategoryInput.value.trim());
     }
     currentSong.segments.push({ id: uid(), label, start, end });
+    persistCurrentSong();
     // Keep the form open on the same time range so another label can be
     // added to it right away (the same range can hold multiple items).
     segLabelInput.value = '';
@@ -304,6 +321,7 @@ function startAddPage() {
     } else {
       currentSong = { id: uid(), name, duration, segments: [] };
     }
+    persistCurrentSong();
     showTimeline();
   });
 
@@ -322,17 +340,12 @@ function startAddPage() {
   }
 
   btnSaveSong.addEventListener('click', () => {
+    // Every change is already persisted as it happens (persistCurrentSong),
+    // so this just confirms the empty-segments case and closes the editor.
     if (!currentSong) return;
     if (currentSong.segments.length === 0) {
-      if (!confirm('要素が1つも登録されていません。このまま保存しますか？')) return;
+      if (!confirm('要素が1つも登録されていません。このまま完了しますか？')) return;
     }
-    const existingIndex = songs.findIndex((s) => s.id === currentSong.id);
-    if (existingIndex >= 0) {
-      songs[existingIndex] = currentSong;
-    } else {
-      songs.push(currentSong);
-    }
-    saveSongs(songs);
     renderSongList();
     resetEditor();
     renderLabelColors();
