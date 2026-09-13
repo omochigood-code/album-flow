@@ -53,6 +53,46 @@ header.topnav a.active {
 
 header.topnav a:hover { background: #f0f1f4; }
 
+.auth-user-info {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.auth-gate {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 246, 248, 0.96);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-gate-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(31, 36, 48, 0.08);
+}
+
+.auth-gate-box h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.auth-gate-box p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.auth-gate-status {
+  min-height: 16px;
+  color: #d64545 !important;
+}
+
 main {
   max-width: 960px;
   margin: 0 auto;

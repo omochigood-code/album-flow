@@ -1,4 +1,4 @@
-(function () {
+function startOverviewPage() {
   let songs = loadSongs();
   const body = document.getElementById('overview-body');
   const labelColorPanel = document.getElementById('label-color-panel');
@@ -257,4 +257,6 @@
     };
     reader.readAsText(file);
   });
-})();
+}
+
+initAuthGate(startOverviewPage);

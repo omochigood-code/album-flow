@@ -12,7 +12,19 @@
   <a href="index.html">Home</a>
   <a href="add.html">曲を追加</a>
   <a href="overview.html" class="active">全体の流れ</a>
+  <span id="auth-user-info" class="auth-user-info"></span>
+  <button id="btn-logout" class="secondary icon" style="display:none;">ログアウト</button>
 </header>
+
+<div id="auth-gate" class="auth-gate">
+  <div class="auth-gate-box">
+    <h2>ログインしてください</h2>
+    <p>データはGoogleアカウントに紐づけてクラウドに保存されます。</p>
+    <button id="btn-google-login">Googleでログイン</button>
+    <p id="auth-gate-status" class="auth-gate-status"></p>
+  </div>
+</div>
+
 <main>
   <div class="panel" id="content-panel">
     <h2>アルバム全体の流れ</h2>
@@ -27,7 +39,7 @@
 
   <div class="panel">
     <h2>データのバックアップ</h2>
-    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">データはこのブラウザ内にのみ保存されています。JSONファイルに書き出しておけば、別のブラウザ・別のPC・他の人とデータを共有したり、消えてしまったときに復元したりできます。</p>
+    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">データはログイン中のGoogleアカウントに紐づけてクラウドに保存されています。念のためJSONファイルにも書き出しておけば、別のアカウントに読み込んだり、手元にバックアップを残したりできます。</p>
     <div class="form-row">
       <button id="btn-export">JSONで書き出す</button>
       <button id="btn-import-trigger" class="secondary">JSONを読み込む（末尾に追加）</button>
@@ -36,7 +48,12 @@
     <p id="import-result" style="font-size:12px; color:#6b7280;"></p>
   </div>
 </main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="app.js"></script>
+<script src="cloud.js"></script>
 <script src="overview.js"></script>
 </body>
 </html>

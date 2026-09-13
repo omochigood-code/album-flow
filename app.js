@@ -1,5 +1,6 @@
-// Shared data layer for Album Flow Visualizer
-const STORAGE_KEY = 'albumFlowSongs';
+// Shared data layer for Album Flow Visualizer.
+// State lives in memory, hydrated from Firestore on sign-in (see cloud.js)
+// and pushed back to Firestore whenever it changes.
 
 const SONG_PALETTE = [
   '#4C6EF5', '#12B886', '#F59F00', '#E64980', '#7048E8',
@@ -12,20 +13,34 @@ const LABEL_PALETTE = [
   '#F783AC', '#91A7FF',
 ];
 
+let _cloudState = { songs: [], labelColors: {}, labelCategories: {} };
+
+// Called by cloud.js after loading a signed-in user's document from Firestore.
+function setCloudState(state) {
+  _cloudState = {
+    songs: Array.isArray(state.songs) ? state.songs : [],
+    labelColors: state.labelColors && typeof state.labelColors === 'object' ? state.labelColors : {},
+    labelCategories: state.labelCategories && typeof state.labelCategories === 'object' ? state.labelCategories : {},
+  };
+}
+
+// Read by cloud.js to persist the current in-memory state back to Firestore.
+function getCloudState() {
+  return _cloudState;
+}
+
+// Called after every mutation so cloud.js can schedule a Firestore write.
+function notifyStateChanged() {
+  if (window.__onStateChanged) window.__onStateChanged();
+}
+
 function loadSongs() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    console.error('Failed to load songs', e);
-    return [];
-  }
+  return _cloudState.songs;
 }
 
 function saveSongs(songs) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
+  _cloudState.songs = songs;
+  notifyStateChanged();
 }
 
 function uid() {
@@ -131,22 +146,14 @@ function groupSegmentsByLabelAcrossAlbum(songs) {
 }
 
 // --- Manual per-label color overrides ---
-const LABEL_COLOR_KEY = 'albumFlowLabelColors';
 
 function loadLabelColors() {
-  try {
-    const raw = localStorage.getItem(LABEL_COLOR_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch (e) {
-    console.error('Failed to load label colors', e);
-    return {};
-  }
+  return _cloudState.labelColors;
 }
 
 function saveLabelColors(map) {
-  localStorage.setItem(LABEL_COLOR_KEY, JSON.stringify(map));
+  _cloudState.labelColors = map;
+  notifyStateChanged();
 }
 
 // Returns the manually-set color for a label if one exists, otherwise the hash-based default.
@@ -165,22 +172,13 @@ function setLabelColor(label, color) {
 // --- Manual per-label "観点" (category/axis) assignment ---
 // e.g. both "轟音" and "静か" belong to the "音量" category, so the overview
 // page can plot them on one shared row instead of separate rows.
-const LABEL_CATEGORY_KEY = 'albumFlowLabelCategories';
-
 function loadLabelCategories() {
-  try {
-    const raw = localStorage.getItem(LABEL_CATEGORY_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch (e) {
-    console.error('Failed to load label categories', e);
-    return {};
-  }
+  return _cloudState.labelCategories;
 }
 
 function saveLabelCategories(map) {
-  localStorage.setItem(LABEL_CATEGORY_KEY, JSON.stringify(map));
+  _cloudState.labelCategories = map;
+  notifyStateChanged();
 }
 
 // Returns the category assigned to a label, or '' if it has none.

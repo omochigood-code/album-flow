@@ -1,4 +1,4 @@
-(function () {
+function startAddPage() {
   let songs = loadSongs();
   let currentSong = null; // { id, name, duration, segments: [{id, label, start, end}] }
   let editingExistingId = null;
@@ -353,4 +353,6 @@
 
   renderSongList();
   renderLabelColors();
-})();
+}
+
+initAuthGate(startAddPage);

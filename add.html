@@ -12,7 +12,19 @@
   <a href="index.html">Home</a>
   <a href="add.html" class="active">曲を追加</a>
   <a href="overview.html">全体の流れ</a>
+  <span id="auth-user-info" class="auth-user-info"></span>
+  <button id="btn-logout" class="secondary icon" style="display:none;">ログアウト</button>
 </header>
+
+<div id="auth-gate" class="auth-gate">
+  <div class="auth-gate-box">
+    <h2>ログインしてください</h2>
+    <p>データはGoogleアカウントに紐づけてクラウドに保存されます。</p>
+    <button id="btn-google-login">Googleでログイン</button>
+    <p id="auth-gate-status" class="auth-gate-status"></p>
+  </div>
+</div>
+
 <main>
   <div class="panel">
     <h2>曲の情報</h2>
@@ -79,7 +91,12 @@
     <div class="song-list" id="song-list"></div>
   </div>
 </main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="app.js"></script>
+<script src="cloud.js"></script>
 <script src="add.js"></script>
 </body>
 </html>
