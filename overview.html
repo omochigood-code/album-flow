@@ -19,10 +19,15 @@
 
 <div id="auth-gate" class="auth-gate">
   <div class="auth-gate-box">
-    <h2>ログインしてください</h2>
-    <p>データはGoogleアカウントに紐づけてクラウドに保存されます。</p>
-    <button id="btn-google-login">Googleでログイン</button>
-    <p id="auth-gate-status" class="auth-gate-status"></p>
+    <div id="auth-checking">
+      <p class="auth-checking-text">確認中...</p>
+    </div>
+    <div id="auth-login-prompt" style="display:none;">
+      <h2>ログインしてください</h2>
+      <p>データはGoogleアカウントに紐づけてクラウドに保存されます。</p>
+      <button id="btn-google-login">Googleでログイン</button>
+      <p id="auth-gate-status" class="auth-gate-status"></p>
+    </div>
   </div>
 </div>
 

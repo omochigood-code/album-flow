@@ -56,6 +56,8 @@ function signOutUser() {
 // the user's Firestore data has been loaded into app.js's in-memory state.
 function initAuthGate(onSignedIn) {
   const overlay = document.getElementById('auth-gate');
+  const checkingBox = document.getElementById('auth-checking');
+  const loginBox = document.getElementById('auth-login-prompt');
   const overlayStatus = document.getElementById('auth-gate-status');
   const loginBtn = document.getElementById('btn-google-login');
   const userInfo = document.getElementById('auth-user-info');
@@ -81,7 +83,11 @@ function initAuthGate(onSignedIn) {
   auth.onAuthStateChanged(async (user) => {
     currentUser = user;
     if (user) {
-      overlayStatus.textContent = '読み込み中...';
+      // Already signed in (the common case on every page navigation) — stay
+      // on the neutral "確認中..." state instead of flashing the login
+      // prompt while the user's data loads from Firestore.
+      checkingBox.style.display = 'block';
+      loginBox.style.display = 'none';
       userInfo.textContent = user.displayName || user.email || '';
       logoutBtn.style.display = 'inline-block';
       try {
@@ -93,10 +99,14 @@ function initAuthGate(onSignedIn) {
           onSignedIn();
         }
       } catch (e) {
+        checkingBox.style.display = 'none';
+        loginBox.style.display = 'block';
         overlayStatus.textContent = `データの読み込みに失敗しました: ${e.message}`;
       }
     } else {
       overlay.style.display = 'flex';
+      checkingBox.style.display = 'none';
+      loginBox.style.display = 'block';
       overlayStatus.textContent = '';
       loginBtn.disabled = false;
       userInfo.textContent = '';
