@@ -153,32 +153,32 @@ function startAddPage() {
     return ratio * currentSong.duration;
   }
 
-  selectTrack.addEventListener('mousedown', (e) => {
+  function handleDragStart(clientX) {
     if (!currentSong) return;
     dragging = true;
-    dragStartX = e.clientX;
+    dragStartX = clientX;
     selectHint.style.display = 'none';
     selectPreview.style.display = 'block';
     selectPreview.style.left = '0%';
     selectPreview.style.width = '0%';
-  });
+  }
 
-  window.addEventListener('mousemove', (e) => {
+  function handleDragMove(clientX) {
     if (!dragging || !currentSong) return;
     const rect = selectTrack.getBoundingClientRect();
-    const x1 = Math.min(dragStartX, e.clientX);
-    const x2 = Math.max(dragStartX, e.clientX);
+    const x1 = Math.min(dragStartX, clientX);
+    const x2 = Math.max(dragStartX, clientX);
     const leftPct = Math.min(100, Math.max(0, ((x1 - rect.left) / rect.width) * 100));
     const rightPct = Math.min(100, Math.max(0, ((x2 - rect.left) / rect.width) * 100));
     selectPreview.style.left = `${leftPct}%`;
     selectPreview.style.width = `${Math.max(0, rightPct - leftPct)}%`;
-  });
+  }
 
-  window.addEventListener('mouseup', (e) => {
+  function handleDragEnd(clientX) {
     if (!dragging || !currentSong) return;
     dragging = false;
     const t1 = timeFromClientX(dragStartX);
-    const t2 = timeFromClientX(e.clientX);
+    const t2 = timeFromClientX(clientX);
     let start = Math.min(t1, t2);
     let end = Math.max(t1, t2);
     if (end - start < 1) {
@@ -192,6 +192,34 @@ function startAddPage() {
       return;
     }
     showSegmentForm(start, end);
+  }
+
+  // Mouse (desktop)
+  selectTrack.addEventListener('mousedown', (e) => handleDragStart(e.clientX));
+  window.addEventListener('mousemove', (e) => handleDragMove(e.clientX));
+  window.addEventListener('mouseup', (e) => handleDragEnd(e.clientX));
+
+  // Touch (mobile) — preventDefault on move so the page doesn't scroll while dragging.
+  selectTrack.addEventListener(
+    'touchstart',
+    (e) => {
+      if (e.touches.length !== 1) return;
+      handleDragStart(e.touches[0].clientX);
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    'touchmove',
+    (e) => {
+      if (!dragging) return;
+      e.preventDefault();
+      handleDragMove(e.touches[0].clientX);
+    },
+    { passive: false }
+  );
+  window.addEventListener('touchend', (e) => {
+    if (!dragging) return;
+    handleDragEnd(e.changedTouches[0].clientX);
   });
 
   // Auto-fill the category field from a previously-registered label, without

@@ -186,6 +186,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   cursor: crosshair;
   user-select: none;
   overflow: hidden;
+  touch-action: none;
 }
 
 .select-track .hint {
