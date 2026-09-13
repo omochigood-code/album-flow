@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全体の流れ - Album Flow Visualizer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topnav">
+  <h1>Album Flow Visualizer</h1>
+  <a href="index.html">Home</a>
+  <a href="add.html">曲を追加</a>
+  <a href="overview.html" class="active">全体の流れ</a>
+</header>
+<main>
+  <div class="panel" id="content-panel">
+    <h2>アルバム全体の流れ</h2>
+    <div id="overview-body"></div>
+  </div>
+
+  <div class="panel">
+    <h2>要素の色・観点</h2>
+    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">同じ名前の要素は常に同じ色で表示されます。色をクリックして変更できます。観点（例: 音量）を設定すると、同じ観点の要素が上の帯グラフで1行にまとまります。</p>
+    <div class="label-color-panel" id="label-color-panel"></div>
+  </div>
+
+  <div class="panel">
+    <h2>データのバックアップ</h2>
+    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">データはこのブラウザ内にのみ保存されています。JSONファイルに書き出しておけば、別のブラウザ・別のPC・他の人とデータを共有したり、消えてしまったときに復元したりできます。</p>
+    <div class="form-row">
+      <button id="btn-export">JSONで書き出す</button>
+      <button id="btn-import-trigger" class="secondary">JSONを読み込む（末尾に追加）</button>
+      <input type="file" id="import-file-input" accept="application/json" style="display:none;">
+    </div>
+    <p id="import-result" style="font-size:12px; color:#6b7280;"></p>
+  </div>
+</main>
+<script src="app.js"></script>
+<script src="overview.js"></script>
+</body>
+</html>

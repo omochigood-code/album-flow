@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>曲を追加 - Album Flow Visualizer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topnav">
+  <h1>Album Flow Visualizer</h1>
+  <a href="index.html">Home</a>
+  <a href="add.html" class="active">曲を追加</a>
+  <a href="overview.html">全体の流れ</a>
+</header>
+<main>
+  <div class="panel">
+    <h2>曲の情報</h2>
+    <div class="form-row">
+      <div class="field">
+        <label for="song-name">曲名</label>
+        <input type="text" id="song-name" placeholder="例: 曲A">
+      </div>
+      <div class="field">
+        <label for="song-duration">曲の長さ (m:ss)</label>
+        <input type="text" id="song-duration" placeholder="例: 3:30">
+      </div>
+      <button id="btn-start">この曲を編集する</button>
+      <button id="btn-reset" class="secondary" style="display:none;">新しい曲にする</button>
+    </div>
+    <p id="editing-note" style="display:none; font-size:12px; color:#6b7280;">既存の曲を編集中です。</p>
+  </div>
+
+  <div class="panel timeline-wrap" id="timeline-wrap">
+    <h2>帯グラフに要素を追加</h2>
+    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">下のバーをドラッグして時間帯を選び、要素名を入力してください。</p>
+    <div class="ruler" id="ruler"></div>
+    <div class="select-track" id="select-track">
+      <div class="hint" id="select-hint">ドラッグして範囲を選択</div>
+      <div class="select-preview" id="select-preview"></div>
+    </div>
+
+    <div class="add-segment-form" id="add-segment-form">
+      <div class="field">
+        <label>要素名</label>
+        <input type="text" id="seg-label" placeholder="例: 轟音">
+      </div>
+      <div class="field">
+        <label>開始 (m:ss)</label>
+        <input type="text" id="seg-start" style="min-width:80px;">
+      </div>
+      <div class="field">
+        <label>終了 (m:ss)</label>
+        <input type="text" id="seg-end" style="min-width:80px;">
+      </div>
+      <div class="field">
+        <label>観点 (任意)</label>
+        <input type="text" id="seg-category" placeholder="例: 音量" style="min-width:100px;">
+      </div>
+      <button id="btn-add-segment">追加</button>
+      <button id="btn-cancel-segment" class="secondary">キャンセル</button>
+    </div>
+
+    <div class="segment-list" id="segment-list"></div>
+
+    <div class="form-row" style="margin-top:20px;">
+      <button id="btn-save-song">この曲を保存</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>要素の色・観点</h2>
+    <p style="font-size:12px; color:#6b7280; margin-top:-6px;">同じ名前の要素は常に同じ色で表示されます。色をクリックして変更できます。観点（例: 音量）を設定すると、全体の流れページで同じ観点の要素が1つの帯グラフにまとまります。</p>
+    <div class="label-color-panel" id="label-color-panel"></div>
+  </div>
+
+  <div class="panel">
+    <h2>追加済みの曲</h2>
+    <div class="song-list" id="song-list"></div>
+  </div>
+</main>
+<script src="app.js"></script>
+<script src="add.js"></script>
+</body>
+</html>
