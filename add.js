@@ -120,32 +120,27 @@ function startAddPage() {
     renderRuler();
     renderSegmentList();
     renderLabelColors();
-    hideSegmentForm();
+    // Open the add-segment form with a sensible default range right away,
+    // so an item can be added by typing alone without ever dragging.
+    showSegmentForm(0, Math.min(10, currentSong.duration), { focus: false });
   }
 
   function hideTimeline() {
     timelineWrap.classList.remove('active');
   }
 
-  function hideSegmentForm() {
-    segForm.classList.remove('active');
-    selectPreview.style.display = 'none';
-    pendingSelection = null;
-    // Blur any focused field so the on-screen keyboard (mobile) closes now,
-    // instead of swallowing the next tap on the timeline just to dismiss it.
-    if (document.activeElement && segForm.contains(document.activeElement)) {
-      document.activeElement.blur();
-    }
-  }
-
-  function showSegmentForm(startSec, endSec) {
+  function showSegmentForm(startSec, endSec, opts) {
     pendingSelection = { start: startSec, end: endSec };
     segLabelInput.value = '';
     segStartInput.value = formatTime(startSec);
     segEndInput.value = formatTime(endSec);
     segCategoryInput.value = '';
     segForm.classList.add('active');
-    segLabelInput.focus();
+    selectHint.style.display = 'none';
+    selectPreview.style.display = 'block';
+    selectPreview.style.left = `${pctFor(startSec)}%`;
+    selectPreview.style.width = `${Math.max(0.5, pctFor(endSec) - pctFor(startSec))}%`;
+    if (!opts || opts.focus !== false) segLabelInput.focus();
   }
 
   // --- Drag-to-select on the timeline track ---
