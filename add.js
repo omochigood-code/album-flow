@@ -131,6 +131,11 @@ function startAddPage() {
     segForm.classList.remove('active');
     selectPreview.style.display = 'none';
     pendingSelection = null;
+    // Blur any focused field so the on-screen keyboard (mobile) closes now,
+    // instead of swallowing the next tap on the timeline just to dismiss it.
+    if (document.activeElement && segForm.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
   }
 
   function showSegmentForm(startSec, endSec) {
