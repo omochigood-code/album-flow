@@ -161,7 +161,12 @@ function startAddPage() {
 
   // --- Drag-to-select on the timeline track ---
   let dragging = false;
-  let dragStartX = 0;
+  // The drag anchor is stored as a TIME (seconds), not a raw pixel, and is
+  // resolved from the track's position at the moment the drag starts. If the
+  // track then shifts mid-drag (e.g. the mobile keyboard closing reflows the
+  // page), later pixel-to-time conversions use a freshly-measured rect, so
+  // the selection stays correct instead of drifting from a stale pixel anchor.
+  let dragStartTime = 0;
 
   function timeFromClientX(clientX) {
     const rect = selectTrack.getBoundingClientRect();
@@ -172,13 +177,15 @@ function startAddPage() {
   function handleDragStart(clientX) {
     if (!currentSong) return;
     dragging = true;
-    dragStartX = clientX;
+    dragStartTime = timeFromClientX(clientX);
     selectHint.style.display = 'none';
     selectPreview.style.display = 'block';
-    selectPreview.style.left = '0%';
+    selectPreview.style.left = `${pctFor(dragStartTime)}%`;
     selectPreview.style.width = '0%';
     // Dismiss the on-screen keyboard (mobile) so it doesn't swallow this tap
-    // and so it isn't left covering the screen while dragging.
+    // and so it isn't left covering the screen while dragging. This can
+    // shift the track's on-screen position, which is why dragStartTime was
+    // already resolved above instead of being stored as a pixel offset.
     if (document.activeElement && segForm.contains(document.activeElement)) {
       document.activeElement.blur();
     }
@@ -186,11 +193,9 @@ function startAddPage() {
 
   function handleDragMove(clientX) {
     if (!dragging || !currentSong) return;
-    const rect = selectTrack.getBoundingClientRect();
-    const x1 = Math.min(dragStartX, clientX);
-    const x2 = Math.max(dragStartX, clientX);
-    const leftPct = Math.min(100, Math.max(0, ((x1 - rect.left) / rect.width) * 100));
-    const rightPct = Math.min(100, Math.max(0, ((x2 - rect.left) / rect.width) * 100));
+    const currentTime = timeFromClientX(clientX);
+    const leftPct = pctFor(Math.min(dragStartTime, currentTime));
+    const rightPct = pctFor(Math.max(dragStartTime, currentTime));
     selectPreview.style.left = `${leftPct}%`;
     selectPreview.style.width = `${Math.max(0, rightPct - leftPct)}%`;
   }
@@ -198,10 +203,9 @@ function startAddPage() {
   function handleDragEnd(clientX) {
     if (!dragging || !currentSong) return;
     dragging = false;
-    const t1 = timeFromClientX(dragStartX);
-    const t2 = timeFromClientX(clientX);
-    let start = Math.min(t1, t2);
-    let end = Math.max(t1, t2);
+    const currentTime = timeFromClientX(clientX);
+    let start = Math.min(dragStartTime, currentTime);
+    let end = Math.max(dragStartTime, currentTime);
     if (end - start < 1) {
       end = Math.min(currentSong.duration, start + Math.max(1, currentSong.duration * 0.02));
     }
