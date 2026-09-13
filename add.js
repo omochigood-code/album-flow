@@ -232,6 +232,22 @@ function startAddPage() {
     handleDragEnd(e.changedTouches[0].clientX);
   });
 
+  // Keep the highlighted preview bar in sync when the start/end fields are
+  // hand-edited, not just while dragging.
+  function syncPreviewFromInputs() {
+    if (!currentSong) return;
+    const start = parseTime(segStartInput.value);
+    const end = parseTime(segEndInput.value);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return;
+    const leftPct = pctFor(Math.min(start, end));
+    const rightPct = pctFor(Math.max(start, end));
+    selectPreview.style.display = 'block';
+    selectPreview.style.left = `${leftPct}%`;
+    selectPreview.style.width = `${Math.max(0, rightPct - leftPct)}%`;
+  }
+  segStartInput.addEventListener('input', syncPreviewFromInputs);
+  segEndInput.addEventListener('input', syncPreviewFromInputs);
+
   // Auto-fill the category field from a previously-registered label, without
   // clobbering anything the user has already typed into it.
   segLabelInput.addEventListener('input', () => {
