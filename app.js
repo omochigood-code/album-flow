@@ -55,9 +55,17 @@ function formatTime(totalSeconds) {
 }
 
 // Accepts "3:30", "3.30", "210" -> seconds
+// Converts full-width digits/colon (common with Japanese IME input, e.g.
+// "３：００") to their half-width equivalents so they parse the same as "3:00".
+function normalizeDigits(str) {
+  return str
+    .replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))
+    .replace(/：/g, ':');
+}
+
 function parseTime(str) {
   if (str == null) return NaN;
-  const trimmed = String(str).trim();
+  const trimmed = normalizeDigits(String(str).trim());
   if (trimmed === '') return NaN;
   const colonMatch = trimmed.match(/^(\d+):(\d{1,2})$/);
   if (colonMatch) {
